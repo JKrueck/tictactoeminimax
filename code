@@ -1,0 +1,181 @@
+# Spiel Tic-Tac-Toe
+#Basis für Tic-Tac-Toe kopiert und teilweise modifiziert von: www.python-lernen.de/tic-tac-toe-python-tutorial.htm
+#minimax algorhitmus  by me
+#20.01.2021
+
+
+def minimax(aSpielfeld):
+    v=MaxValue(aSpielfeld)
+    return v
+def MaxValue(bSpielfeld):
+        if kontrolle_gewonnen(bSpielfeld) or kontrolle_auf_unentschieden(bSpielfeld)=='unentschieden':
+            return evaluate(bSpielfeld)
+        v=-999999999999999
+        for action in range(1,10):
+            if bSpielfeld[action]=="X" or bSpielfeld[action]=="O":
+                continue
+            else:
+                v=max(v,MinValue(ChildstateO(bSpielfeld,action),action))
+                f[v]=action
+                g.append(v)
+        return int(f[max(g)])
+
+def ChildstateO(eingabeSpielfeld,action):
+    
+    dummySpielfeld=list(eingabeSpielfeld)  
+    for  index in range(1,10):
+        if index== action:
+            dummySpielfeld[index]="O"
+            return dummySpielfeld
+        
+def ChildstateX(eingabeSpielfeld,action):
+    dummySpielfeld=list(eingabeSpielfeld)
+    for arschlecken in range(1,10):
+        if action == arschlecken:
+            dummySpielfeld[arschlecken]="X"
+            return dummySpielfeld
+            
+def MinValue(dSpielfeld,action): 
+    if kontrolle_gewonnen(dSpielfeld) or kontrolle_auf_unentschieden(dSpielfeld):
+            return evaluate(dSpielfeld)
+    v=999999999
+    for a in range(1,10):
+        if dSpielfeld[a]=="X" or dSpielfeld[a]=="O":
+            continue
+        else:
+            v=min(v,MaxValue(ChildstateX(dSpielfeld,a)))
+    return v
+
+def evaluate (cSpielfeld):    
+    for a in range (3):
+        if ((cSpielfeld[a] == cSpielfeld[a+1] and cSpielfeld[a+1]== cSpielfeld[a+2])):
+             if (cSpielfeld[a] == "O") :
+                return 10
+             elif (cSpielfeld[a] == "X") :
+                return -10
+    for a in range (3):
+        if ((cSpielfeld[a] == cSpielfeld[a+3] and cSpielfeld[a+3]== cSpielfeld[a+6])):
+             if (cSpielfeld[a] == "O") :
+                return 10
+             elif (cSpielfeld[a] == "X") :
+                return -10
+    
+    if cSpielfeld[1] == cSpielfeld[5] == cSpielfeld[9]:
+        if (cSpielfeld[a] == "O") :
+            return 10
+        elif (cSpielfeld[a] == "X") :
+            return -10   
+    if cSpielfeld[7] == cSpielfeld[5] == cSpielfeld[3]:
+        if (cSpielfeld[a] == "O") :
+            return 10
+        elif (cSpielfeld[a] == "X") :
+            return -10   
+        
+    return 0  
+
+
+spiel_aktiv = True
+spieler_aktuell = 'X'
+# Spielfeld als Liste erstellen
+spielfeld = [" ",
+             "1","2","3",
+             "4","5","6",
+             "7","8","9"]
+# Spielfeld ausgeben
+def spielfeld_ausgeben():
+    print (str(spielfeld[1]) + "|" + str(spielfeld[2]) + "|" + str(spielfeld[3]) )
+    print (str(spielfeld[4]) + "|" + str(spielfeld[5]) + "|" + str(spielfeld[6]))
+    print (str(spielfeld[7]) + "|" + str(spielfeld[8]) + "|" + str(spielfeld[9]) )
+# Spieleingabe und Kontrolle der Eingabe
+def spieler_eingabe():
+    global spiel_aktiv
+    while True:
+        spielzug = input("Bitte Feld eingeben: ")
+        # vorzeitiges Spielende durch Spieler
+        if spielzug == 'q':
+            spiel_aktiv = False
+            return
+        try:
+            spielzug = int(spielzug)
+        except ValueError:
+            print("Bitte Zahl von 1 bis 9 eingeben")
+        else:
+            if spielzug >= 1 and spielzug <= 9:
+                if spielfeld[spielzug] == 'X' or spielfeld[spielzug] == 'O':
+                    print("Das Feld ist bereits belegt - ein anderes wählen!")
+                else:
+                    return spielzug
+            else:
+                print("Zahl muss zwischen 1 und 9 liegen")
+def spieler_wechseln():
+    global spieler_aktuell
+    if spieler_aktuell == 'X':
+        spieler_aktuell = 'O'
+    else:
+        spieler_aktuell = 'X'
+# Kontrolle, ob ein Spieler gewonnen hat
+def kontrolle_gewonnen(spielfeldziel):
+    # wenn alle 3 Felder gleich sind, hat der entsprechende Spieler gewonnen
+    # Kontrolle auf Reihen
+    if spielfeldziel[1] == spielfeldziel[2] == spielfeldziel[3]:
+        return spielfeldziel[1]
+    if spielfeldziel[4] == spielfeldziel[5] == spielfeldziel[6]:
+        return spielfeldziel[4]
+    if spielfeldziel[7] == spielfeldziel[8] == spielfeldziel[9]:
+        return spielfeldziel[7]
+    # Kontrolle auf Spalten
+    if spielfeldziel[1] == spielfeldziel[4] == spielfeldziel[7]:
+        return spielfeldziel[1]
+    if spielfeldziel[2] == spielfeldziel[5] == spielfeldziel[8]:
+        return spielfeldziel[2]
+    if spielfeldziel[3] == spielfeldziel[6] == spielfeldziel[9]:
+        return spielfeldziel[3]
+       
+    # Kontrolle auf Diagonalen
+    if spielfeldziel[1] == spielfeldziel[5] == spielfeldziel[9]:
+        return spielfeldziel[1]
+    if spielfeldziel[7] == spielfeldziel[5] == spielfeldziel[3]:
+        return spielfeldziel[7]
+    
+        
+def kontrolle_auf_unentschieden(spielfeldz):
+    if (spielfeldz[1] == 'X' or spielfeldz[1] == 'O') \
+      and (spielfeldz[2] == 'X' or spielfeldz[2] == 'O') \
+      and (spielfeldz[3] == 'X' or spielfeldz[3] == 'O') \
+      and (spielfeldz[4] == 'X' or spielfeldz[4] == 'O') \
+      and (spielfeldz[5] == 'X' or spielfeldz[5] == 'O') \
+      and (spielfeldz[6] == 'X' or spielfeldz[6] == 'O') \
+      and (spielfeldz[7] == 'X' or spielfeldz[7] == 'O') \
+      and (spielfeldz[8] == 'X' or spielfeldz[8] == 'O') \
+      and (spielfeldz[9] == 'X' or spielfeldz[9] == 'O'):
+        return ('unentschieden')
+        
+# aktuelles Spielfeld ausgeben
+spielfeld_ausgeben()
+while spiel_aktiv:
+    # Eingabe des aktiven Spielers
+    print()
+    print ("Spieler " + spieler_aktuell + " am Zug")
+    if spieler_aktuell=="X":
+        spielzug = spieler_eingabe()
+    else:
+        spielzug = minimax(spielfeld)
+    if spielzug:
+        # spielfeld[spielzug] = 'X'
+        spielfeld[spielzug] = spieler_aktuell
+        # aktuelles Spielfeld ausgeben
+        spielfeld_ausgeben()
+        # Kontrolle, ob jemand gewonnen hat
+        gewonnen = kontrolle_gewonnen(spielfeld)
+        if gewonnen:
+            print ("Spieler " + gewonnen + " hat gewonnen!")
+            spiel_aktiv = False
+            break
+        # Kontrolle, ob unentschieden
+        unentschieden = kontrolle_auf_unentschieden(spielfeld)
+        if unentschieden:
+            print ("Spiel ist unentschieden ausgegangen")
+            spiel_aktiv = False
+        # Spieler wechseln
+        spieler_wechseln()
+print() 
