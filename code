@@ -1,7 +1,7 @@
 # Spiel Tic-Tac-Toe
 #Basis für Tic-Tac-Toe kopiert und teilweise modifiziert von: www.python-lernen.de/tic-tac-toe-python-tutorial.htm
 #minimax algorhitmus  by me
-#20.01.2021
+#25.01.2021
 
 f={}
 g=[]
