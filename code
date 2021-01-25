@@ -3,64 +3,66 @@
 #minimax algorhitmus  by me
 #20.01.2021
 
+f={}
+g=[]
 
-def minimax(aSpielfeld):
+def minimax(aSpielfeld):#Hauptaufruf des algor.
     v=MaxValue(aSpielfeld)
     return v
-def MaxValue(bSpielfeld):
-        if kontrolle_gewonnen(bSpielfeld) or kontrolle_auf_unentschieden(bSpielfeld)=='unentschieden':
+def MaxValue(bSpielfeld): #maximizer
+        if kontrolle_gewonnen(bSpielfeld) or kontrolle_auf_unentschieden(bSpielfeld)=='unentschieden': #check for terminal state
             return evaluate(bSpielfeld)
-        v=-999999999999999
-        for action in range(1,10):
-            if bSpielfeld[action]=="X" or bSpielfeld[action]=="O":
+        v=-999999999999999 #value=-unendlich
+        for action in range(1,10):#jeder spielzug wird betrachtet
+            if bSpielfeld[action]=="X" or bSpielfeld[action]=="O":#falls das feld schon belegt wird geht es weiter
                 continue
             else:
-                v=max(v,MinValue(ChildstateO(bSpielfeld,action),action))
-                f[v]=action
-                g.append(v)
-        return int(f[max(g)])
+                v=max(v,MinValue(ChildstateO(bSpielfeld,action),action))#bilden des neuen boardstate und übergehen in den min zug
+                f[v]=action#der value wird einem spielzug zugewiesen
+                g.append(v)#die values in eine liste schreiben
+        return int(f[max(g)])# den besten Spielzug aussuchen und zurückgeben
 
-def ChildstateO(eingabeSpielfeld,action):
+def ChildstateO(eingabeSpielfeld,action):#childstate für maximiser
     
-    dummySpielfeld=list(eingabeSpielfeld)  
-    for  index in range(1,10):
+    dummySpielfeld=list(eingabeSpielfeld)#damit das Hauptspielfeld nicht modifiziert wird, erstelle ich hier ein vrtuelles spielfeld in dem der Childstate erzeugt wird  
+    for  index in range(1,10):#alle möglichen spielzüge überprüfen vielleicht unnötig?
         if index== action:
-            dummySpielfeld[index]="O"
+            dummySpielfeld[index]="O"#das neue Spielfeld erzeugen
             return dummySpielfeld
         
-def ChildstateX(eingabeSpielfeld,action):
+def ChildstateX(eingabeSpielfeld,action):#analog zu ChildstateO
     dummySpielfeld=list(eingabeSpielfeld)
     for arschlecken in range(1,10):
         if action == arschlecken:
             dummySpielfeld[arschlecken]="X"
             return dummySpielfeld
             
-def MinValue(dSpielfeld,action): 
+def MinValue(dSpielfeld,action): #minimizer analog zu maximizer
     if kontrolle_gewonnen(dSpielfeld) or kontrolle_auf_unentschieden(dSpielfeld):
             return evaluate(dSpielfeld)
-    v=999999999
+    v=999999999#value=unendlich
     for a in range(1,10):
         if dSpielfeld[a]=="X" or dSpielfeld[a]=="O":
             continue
         else:
             v=min(v,MaxValue(ChildstateX(dSpielfeld,a)))
     return v
-
-def evaluate (cSpielfeld):    
-    for a in range (3):
+#der maximizer und minimizer steigen solange rekursiv ab bis ein terminalstate erreicht ist
+def evaluate (cSpielfeld): #evaluieren des terminalstate   
+    for a in range (3):#vertikale reihen
         if ((cSpielfeld[a] == cSpielfeld[a+1] and cSpielfeld[a+1]== cSpielfeld[a+2])):
              if (cSpielfeld[a] == "O") :
                 return 10
              elif (cSpielfeld[a] == "X") :
                 return -10
-    for a in range (3):
+    for a in range (3):#horizontale reihen
         if ((cSpielfeld[a] == cSpielfeld[a+3] and cSpielfeld[a+3]== cSpielfeld[a+6])):
              if (cSpielfeld[a] == "O") :
                 return 10
              elif (cSpielfeld[a] == "X") :
                 return -10
     
-    if cSpielfeld[1] == cSpielfeld[5] == cSpielfeld[9]:
+    if cSpielfeld[1] == cSpielfeld[5] == cSpielfeld[9]:#diagonalen
         if (cSpielfeld[a] == "O") :
             return 10
         elif (cSpielfeld[a] == "X") :
