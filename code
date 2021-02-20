@@ -1,77 +1,92 @@
 # Spiel Tic-Tac-Toe
 #Basis für Tic-Tac-Toe kopiert und teilweise modifiziert von: www.python-lernen.de/tic-tac-toe-python-tutorial.htm
 #minimax algorhitmus  by me
-#20.01.2021
+#20.02.2021
+import math
 
-
-def minimax(aSpielfeld):
-    v=MaxValue(aSpielfeld)
-    return v
-def MaxValue(bSpielfeld):
-        if kontrolle_gewonnen(bSpielfeld) or kontrolle_auf_unentschieden(bSpielfeld)=='unentschieden':
-            return evaluate(bSpielfeld)
-        v=-999999999999999
-        for action in range(1,10):
-            if bSpielfeld[action]=="X" or bSpielfeld[action]=="O":
+def minimax(aSpielfeld):#Hauptaufruf des algor.
+    f={}
+    g=[]
+    for action in range(1,10):#jeder spielzug wird betrachtet
+            if aSpielfeld[action]=="X" or aSpielfeld[action]=="O":
+                    print("skipped"+str(action))
+                    continue
+            else:
+                v=MaxValue(aSpielfeld,action)
+                g.append(v)
+                f[v]=action
+    
+   
+    return (f[max(g)])
+def MaxValue(bSpielfeld,action): #maximizer
+    v=-math.inf #value=-unendlich
+    aktuellesFeld=ChildstateO(bSpielfeld,action)
+    if kontrolle_gewonnen(aktuellesFeld) or kontrolle_auf_unentschieden(aktuellesFeld)=='unentschieden': #check for terminal state
+            return evaluate(aktuellesFeld)
+    for nextaction in range(1,10):#jeder spielzug wird betrachtet
+            if aktuellesFeld[nextaction]=="X" or aktuellesFeld[nextaction]=="O":
                 continue
             else:
-                v=max(v,MinValue(ChildstateO(bSpielfeld,action),action))
-                f[v]=action
-                g.append(v)
-        return int(f[max(g)])
-
-def ChildstateO(eingabeSpielfeld,action):
-    
-    dummySpielfeld=list(eingabeSpielfeld)  
-    for  index in range(1,10):
-        if index== action:
-            dummySpielfeld[index]="O"
-            return dummySpielfeld
-        
-def ChildstateX(eingabeSpielfeld,action):
-    dummySpielfeld=list(eingabeSpielfeld)
-    for arschlecken in range(1,10):
-        if action == arschlecken:
-            dummySpielfeld[arschlecken]="X"
-            return dummySpielfeld
-            
-def MinValue(dSpielfeld,action): 
-    if kontrolle_gewonnen(dSpielfeld) or kontrolle_auf_unentschieden(dSpielfeld):
-            return evaluate(dSpielfeld)
-    v=999999999
-    for a in range(1,10):
-        if dSpielfeld[a]=="X" or dSpielfeld[a]=="O":
-            continue
-        else:
-            v=min(v,MaxValue(ChildstateX(dSpielfeld,a)))
+                v=max(v,MinValue(aktuellesFeld,nextaction))
     return v
+        
+       
 
-def evaluate (cSpielfeld):    
-    for a in range (3):
-        if ((cSpielfeld[a] == cSpielfeld[a+1] and cSpielfeld[a+1]== cSpielfeld[a+2])):
-             if (cSpielfeld[a] == "O") :
-                return 10
-             elif (cSpielfeld[a] == "X") :
-                return -10
-    for a in range (3):
-        if ((cSpielfeld[a] == cSpielfeld[a+3] and cSpielfeld[a+3]== cSpielfeld[a+6])):
+def ChildstateO(eingabeSpielfeld,action):#childstate für maximiser
+    
+    dummySpielfeld=list(eingabeSpielfeld)#damit das Hauptspielfeld nicht modifiziert wird, erstelle ich hier ein vrtuelles spielfeld in dem der Childstate erzeugt wird  
+    dummySpielfeld[action]="O"#das neue Spielfeld erzeugen
+    return dummySpielfeld
+        
+def ChildstateX(eingabeSpielfeld,action):#analog zu ChildstateO
+    dummySpielfeld=list(eingabeSpielfeld)
+    dummySpielfeld[action]="X"
+    return dummySpielfeld
+            
+def MinValue(dSpielfeld,action): #minimizer analog zu maximizer
+    v=math.inf#value=unendlich
+    aktuellesFeld2=ChildstateX(dSpielfeld,action)
+    if kontrolle_gewonnen(aktuellesFeld2) or kontrolle_auf_unentschieden(aktuellesFeld2):
+            return evaluate(aktuellesFeld2)
+    for nextaction in range(1,10):
+            if aktuellesFeld2[nextaction]=="X" or aktuellesFeld2[nextaction]=="O":
+                continue
+            else:
+                v=min(v,MaxValue(aktuellesFeld2,nextaction))
+
+    return v
+    #der maximizer und minimizer steigen solange rekursiv ab bis ein terminalstate erreicht ist
+def evaluate (cSpielfeld): #evaluieren des terminalstate   
+    
+    #vertikale Reihen
+    for a in range(1, 10, 3):
+        if cSpielfeld[a] == cSpielfeld[a+1] and cSpielfeld[a+1] == cSpielfeld[a+2]:
+             if (cSpielfeld[a] == "O"):
+                 return 10
+             elif (cSpielfeld[a] == "X"):
+                 return -10
+
+    #horizontale Reihen
+    for a in range(1, 4):#horizontale reihen
+        if cSpielfeld[a] == cSpielfeld[a+3] and cSpielfeld[a+3] == cSpielfeld[a+6]:
              if (cSpielfeld[a] == "O") :
                 return 10
              elif (cSpielfeld[a] == "X") :
                 return -10
     
-    if cSpielfeld[1] == cSpielfeld[5] == cSpielfeld[9]:
-        if (cSpielfeld[a] == "O") :
+    #Diagonale Reihen
+    if cSpielfeld[1] == cSpielfeld[5] and cSpielfeld[5] == cSpielfeld[9]:
+        if (cSpielfeld[1] == "O") :
             return 10
-        elif (cSpielfeld[a] == "X") :
+        elif (cSpielfeld[1] == "X") :
             return -10   
-    if cSpielfeld[7] == cSpielfeld[5] == cSpielfeld[3]:
-        if (cSpielfeld[a] == "O") :
+    if cSpielfeld[7] == cSpielfeld[5] and cSpielfeld[5] == cSpielfeld[3]:
+        if (cSpielfeld[7] == "O") :
             return 10
-        elif (cSpielfeld[a] == "X") :
+        elif (cSpielfeld[7] == "X") :
             return -10   
         
-    return 0  
+    return 0 
 
 
 spiel_aktiv = True
@@ -117,24 +132,24 @@ def spieler_wechseln():
 def kontrolle_gewonnen(spielfeldziel):
     # wenn alle 3 Felder gleich sind, hat der entsprechende Spieler gewonnen
     # Kontrolle auf Reihen
-    if spielfeldziel[1] == spielfeldziel[2] == spielfeldziel[3]:
+    if spielfeldziel[1] == spielfeldziel[2] and spielfeldziel[2] == spielfeldziel[3]:
         return spielfeldziel[1]
-    if spielfeldziel[4] == spielfeldziel[5] == spielfeldziel[6]:
+    if spielfeldziel[4] == spielfeldziel[5] and spielfeldziel[5] == spielfeldziel[6]:
         return spielfeldziel[4]
-    if spielfeldziel[7] == spielfeldziel[8] == spielfeldziel[9]:
+    if spielfeldziel[7] == spielfeldziel[8] and spielfeldziel[8] == spielfeldziel[9]:
         return spielfeldziel[7]
     # Kontrolle auf Spalten
-    if spielfeldziel[1] == spielfeldziel[4] == spielfeldziel[7]:
+    if spielfeldziel[1] == spielfeldziel[4] and spielfeldziel[4] == spielfeldziel[7]:
         return spielfeldziel[1]
-    if spielfeldziel[2] == spielfeldziel[5] == spielfeldziel[8]:
+    if spielfeldziel[2] == spielfeldziel[5] and spielfeldziel[5] == spielfeldziel[8]:
         return spielfeldziel[2]
-    if spielfeldziel[3] == spielfeldziel[6] == spielfeldziel[9]:
+    if spielfeldziel[3] == spielfeldziel[6] and spielfeldziel[6] == spielfeldziel[9]:
         return spielfeldziel[3]
        
     # Kontrolle auf Diagonalen
-    if spielfeldziel[1] == spielfeldziel[5] == spielfeldziel[9]:
+    if spielfeldziel[1] == spielfeldziel[5] and spielfeldziel[5] == spielfeldziel[9]:
         return spielfeldziel[1]
-    if spielfeldziel[7] == spielfeldziel[5] == spielfeldziel[3]:
+    if spielfeldziel[7] == spielfeldziel[5] and spielfeldziel[5] == spielfeldziel[3]:
         return spielfeldziel[7]
     
         
